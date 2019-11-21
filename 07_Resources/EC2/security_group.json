@@ -23,16 +23,16 @@
 			],
 			"Tags": [
                 {
-                    "Key" : "Name",
-                    "Value" : "Maintenance"
+                    "Key": "Name",
+                    "Value": "Maintenance"
                 },
                 {
-                    "Key" : "Author",
-                    "Value" : "0x4447 LLC"
+                    "Key": "Author",
+                    "Value": "0x4447 LLC"
                 },
                 {
-                    "Key" : "Info",
-                    "Value" : "https://0x4447.com"
+                    "Key": "Info",
+                    "Value": "https://0x4447.com"
                 }
             ]
 		}

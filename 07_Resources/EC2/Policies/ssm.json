@@ -1,12 +1,12 @@
 {
 	"EC2PolicySSM": {
-		"Type" : "AWS::IAM::Policy",
-		"Properties" : {
+		"Type": "AWS::IAM::Policy",
+		"Properties": {
 			"PolicyName": "SSM",
-			"Roles" : [
+			"Roles": [
 				{ "Ref": "EC2Role" }
 			],
-			"PolicyDocument" : {
+			"PolicyDocument": {
 				"Version": "2012-10-17",
 				"Statement": [
 					{

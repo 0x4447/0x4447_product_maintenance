@@ -1,19 +1,21 @@
 {
-	"AWS::CloudFormation::Interface" : {
+	"AWS::CloudFormation::Interface": {
 		"ParameterGroups": [
 			{
-				"Label" : { "default" : "Access" },
-				"Parameters" : [ "KeyNameParam" ]
+				"Label": { "default": "Instance Configuration" },
+				"Parameters": [ "InstanceTypeParam", "ElasticIPIDParam", "KeyNameParam" ]
 			},
 			{
-				"Label" : { "default" : "VPC" },
-				"Parameters" : [ "VPCParam", "VPCSubnetsParam"]
+				"Label": { "default": "VPC" },
+				"Parameters": [ "VPCParam", "VPCSubnetsParam"]
 			}
 		],
 		"ParameterLabels": {
-			"KeyNameParam": { "default" : "EC2 Private Key" },
-			"VPCParam": { "default" : "VPC ID" },
-			"VPCSubnetsParam": { "default" : "VPC Public Subnet" }
+			"InstanceTypeParam": { "default": "Instance Type" },
+			"KeyNameParam": { "default": "EC2 Private Key" },
+			"ElasticIPIDParam": { "default": "Elastic IP ID" },
+			"VPCParam": { "default": "VPC ID" },
+			"VPCSubnetsParam": { "default": "VPC Public Subnet" }
 		}
 	}
 }
