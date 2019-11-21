@@ -1,15 +1,19 @@
 {
     "EC2Instance": {
-        "Type" : "AWS::EC2::Instance",
-        "Properties" : {
-            "InstanceType" : "t3.nano",
+        "Type": "AWS::EC2::Instance",
+        "Properties": {
+            "InstanceType": { "Ref": "InstanceTypeParam" },
             "ImageId": { "Fn::FindInMap": ["OSIDs", {"Ref": "AWS::Region"}, "64"] },
-            "KeyName" : { "Ref": "KeyNameParam"},
+            "KeyName": { "Ref": "KeyNameParam"},
             "IamInstanceProfile": { "Ref": "ECSInstanceProfile" },
             "UserData": { "Fn::Base64": { "Fn::Join": ["\n", [
                 "#!/bin/bash",
 
                 "sudo yum -y update",
+
+                "INSTANCE_ID=$(curl http://169.254.169.254/latest/meta-data/instance-id 2>/dev/null)",
+
+                { "Fn::Sub": "aws ec2 associate-address --allocation-id ${ElasticIPIDParam} --instance-id $INSTANCE_ID --allow-reassociation --region=${AWS::Region}" },
 
                 "sudo amazon-linux-extras install postgresql10",
 
@@ -27,32 +31,32 @@
             "NetworkInterfaces": [ {
                 "AssociatePublicIpAddress": "true",
                 "DeviceIndex": "0",
-                "GroupSet": [{ "Ref" : "EC2SecurityGroup" }],
-                "SubnetId": { "Ref" : "VPCSubnetsParam" }
+                "GroupSet": [{ "Ref": "EC2SecurityGroup" }],
+                "SubnetId": { "Ref": "VPCSubnetsParam" }
             }],
             "Tags": [
                 {
-                    "Key" : "Name",
-                    "Value" : "Maintenance"
+                    "Key": "Name",
+                    "Value": "Maintenance"
                 },
                 {
-                    "Key" : "Description",
-                    "Value" : "A Instance to perform Maintenance work in the account with auto shutdown after 30min."
+                    "Key": "Description",
+                    "Value": "A Instance to perform Maintenance work in the account with auto shutdown after 30min."
                 },
                 {
-                    "Key" : "Author",
-                    "Value" : "0x4447 LLC"
+                    "Key": "Author",
+                    "Value": "0x4447 LLC"
                 },
                 {
-                    "Key" : "Info",
-                    "Value" : "https://0x4447.com"
+                    "Key": "Info",
+                    "Value": "https://0x4447.com"
                 }
             ]
         },
         "Metadata": {
-            "AWS::CloudFormation::Init" : {
-                "config" : {
-                    "packages" : {
+            "AWS::CloudFormation::Init": {
+                "config": {
+                    "packages": {
                         "yum": {
                             "nmap": [],
                             "mc": [],
@@ -61,27 +65,27 @@
                             "git": []
                         }
                     },
-                    "files" : {
-                        "/etc/cfn/cfn-hup.conf" : {
-                            "mode"  : "000644",
-                            "owner" : "root",
-                            "group" : "root",
-                            "content" : { "Fn::Join" : ["\n", [
+                    "files": {
+                        "/etc/cfn/cfn-hup.conf": {
+                            "mode" : "000644",
+                            "owner": "root",
+                            "group": "root",
+                            "content": { "Fn::Join": ["\n", [
                                 "[main]",
                                 { "Fn::Sub": "stack=${AWS::StackId}" },
                                 { "Fn::Sub": "region=${AWS::Region}" }
                             ]]}
                         },
-                        "/etc/cfn/hooks.d/cfn-auto-reloader.conf" : {
-                            "content" : { "Fn::Join" : ["\n", [
+                        "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                            "content": { "Fn::Join": ["\n", [
                                 "[cfn-auto-reloader-hook]",
                                 "triggers=post.update",
                                 "path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init",
                                 { "Fn::Sub": "action=/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource EC2Instance" }
                             ]]}
                         },
-                        "/etc/systemd/system/idle_shutdown_aws.service" : {
-                            "content" : { "Fn::Join" : ["\n", [
+                        "/etc/systemd/system/idle_shutdown_aws.service": {
+                            "content": { "Fn::Join": ["\n", [
                                 "[Unit]",
                                 "Description=Idle Instance Detection",
                                 "Documentation=https://0x4447.com",
