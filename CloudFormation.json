@@ -52,6 +52,12 @@
 			"Description": "Select the Instance type.",
 			"Type": "String",
 			"AllowedValues": [
+				"t2.nano",
+				"t2.micro",
+				"t2.small",
+				"t2.medium",
+				"t2.large",
+				"t2.xlarge",
 				"t3a.nano",
 				"t3a.micro",
 				"t3a.small",
@@ -114,7 +120,7 @@
 				"m5dn.16xlarge",
 				"m5dn.24xlarge"
 			],
-			"Default": "t3a.nano"
+			"Default": "t2.nano"
 		},
 		"KeyNameParam": {
 			"Description": "The name of the private key to be used to access the server.",
@@ -215,6 +221,19 @@
 				"IamInstanceProfile": {
 					"Ref": "ECSInstanceProfile"
 				},
+				"HibernationOptions": {
+					"Configured": true
+				},
+				"BlockDeviceMappings": [
+					{
+						"DeviceName": "/dev/xvda",
+						"Ebs": {
+							"VolumeSize": "10",
+							"VolumeType": "gp2",
+							"Encrypted": "true"
+						}
+					}
+				],
 				"UserData": {
 					"Fn::Base64": {
 						"Fn::Join": [
@@ -403,7 +422,9 @@
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
 				"GroupDescription": "SSH Access.",
-				"GroupName": "Maintenance",
+				"GroupName": {
+					"Fn::Sub": "maintenance-${AWS::StackName}"
+				},
 				"VpcId": {
 					"Ref": "VPCParam"
 				},
@@ -439,28 +460,6 @@
 				]
 			}
 		},
-		"EC2ElasticIPPolicy": {
-			"Type": "AWS::IAM::Policy",
-			"Description": "The action AssociateAddress, doesn't no take an ARN, it needs to be *",
-			"Properties": {
-				"PolicyName": "Elastic_IP",
-				"Roles": [
-					{
-						"Ref": "EC2Role"
-					}
-				],
-				"PolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [
-						{
-							"Effect": "Allow",
-							"Action": "ec2:AssociateAddress",
-							"Resource": "*"
-						}
-					]
-				}
-			}
-		},
 		"EC2PolicySSM": {
 			"Type": "AWS::IAM::Policy",
 			"Properties": {
@@ -482,6 +481,28 @@
 							"Resource": {
 								"Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
 							}
+						}
+					]
+				}
+			}
+		},
+		"EC2ElasticIPPolicy": {
+			"Type": "AWS::IAM::Policy",
+			"Description": "The action AssociateAddress, doesn't no take an ARN, it needs to be *",
+			"Properties": {
+				"PolicyName": "Elastic_IP",
+				"Roles": [
+					{
+						"Ref": "EC2Role"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Action": "ec2:AssociateAddress",
+							"Resource": "*"
 						}
 					]
 				}

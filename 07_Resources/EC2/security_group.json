@@ -3,7 +3,7 @@
 		"Type": "AWS::EC2::SecurityGroup",
 		"Properties": {
 			"GroupDescription": "SSH Access.",
-			"GroupName": "Maintenance",
+			"GroupName": { "Fn::Sub": "maintenance-${AWS::StackName}" },
 			"VpcId": { "Ref": "VPCParam" },
 			"SecurityGroupEgress": [
 				{
